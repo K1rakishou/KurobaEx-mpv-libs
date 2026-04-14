@@ -1,0 +1,68 @@
+From 7fc5a52a49ffd8066cf789bf91dc5ea9459564a5 Mon Sep 17 00:00:00 2001
+From: k1rakishou <kez1911@protonmail.com>
+Date: Tue, 14 Apr 2026 18:16:03 +0700
+Subject: [PATCH] Add some other changes + bump player version
+
+---
+ app/src/main/jni/jni_utils.cpp |  2 +-
+ app/src/main/jni/jni_utils.h   |  2 +-
+ app/src/main/jni/main.cpp      | 10 +++++++++-
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/app/src/main/jni/jni_utils.cpp b/app/src/main/jni/jni_utils.cpp
+index 8f28143..40339b5 100644
+--- a/app/src/main/jni/jni_utils.cpp
++++ b/app/src/main/jni/jni_utils.cpp
+@@ -37,7 +37,7 @@ void init_methods_cache(JNIEnv *env)
+     // static final android.graphics.Bitmap$Config ARGB_8888
+     android_graphics_Bitmap_Config_ARGB_8888 = env->GetStaticFieldID(android_graphics_Bitmap_Config, "ARGB_8888", "Landroid/graphics/Bitmap$Config;");
+ 
+-    mpv_MPVLib = FIND_CLASS("is/xyz/mpv/MPVLib");
++    mpv_MPVLib = FIND_CLASS("com/github/k1rakishou/chan/core/mpv/MPVLib");
+     mpv_MPVLib_eventProperty_S  = env->GetStaticMethodID(mpv_MPVLib, "eventProperty", "(Ljava/lang/String;)V"); // eventProperty(String)
+     mpv_MPVLib_eventProperty_Sb = env->GetStaticMethodID(mpv_MPVLib, "eventProperty", "(Ljava/lang/String;Z)V"); // eventProperty(String, boolean)
+     mpv_MPVLib_eventProperty_Sl = env->GetStaticMethodID(mpv_MPVLib, "eventProperty", "(Ljava/lang/String;J)V"); // eventProperty(String, long)
+diff --git a/app/src/main/jni/jni_utils.h b/app/src/main/jni/jni_utils.h
+index 970eed9..e4bd638 100644
+--- a/app/src/main/jni/jni_utils.h
++++ b/app/src/main/jni/jni_utils.h
+@@ -2,7 +2,7 @@
+ 
+ #include <jni.h>
+ 
+-#define jni_func_name(name) Java_is_xyz_mpv_MPVLib_##name
++#define jni_func_name(name) Java_com_github_k1rakishou_chan_core_mpv_MPVLib_##name
+ #define jni_func(return_type, name, ...) JNIEXPORT return_type JNICALL jni_func_name(name) (JNIEnv *env, jobject obj, ##__VA_ARGS__)
+ 
+ bool acquire_jni_env(JavaVM *vm, JNIEnv **env);
+diff --git a/app/src/main/jni/main.cpp b/app/src/main/jni/main.cpp
+index 5f3faed..42d0a74 100644
+--- a/app/src/main/jni/main.cpp
++++ b/app/src/main/jni/main.cpp
+@@ -30,7 +30,9 @@ extern "C" {
+ JavaVM *g_vm;
+ mpv_handle *g_mpv;
+ std::atomic<bool> g_event_thread_request_exit(false);
+-
++// When updating the player code or anything related to it update this variable as
++// well as the MPVLib.SUPPORTED_MPV_PLAYER_VERSION
++static int64_t player_version = 5;
+ static pthread_t event_thread_id;
+ 
+ static void prepare_environment(JNIEnv *env, jobject appctx) {
+@@ -90,6 +92,12 @@ jni_func(void, destroy) {
+     g_mpv = NULL;
+ }
+ 
++jni_func(jobject, playerVersion) {
++    init_methods_cache(env);
++
++    return env->NewObject(java_Integer, java_Integer_init, (jint)player_version);
++}
++
+ jni_func(void, command, jobjectArray jarray) {
+     CHECK_MPV_INIT();
+ 
+-- 
+2.53.0
+
