@@ -22,12 +22,12 @@ WORKDIR /build
 RUN git clone https://github.com/mpv-android/mpv-android.git .
 RUN git clone https://github.com/K1rakishou/KurobaEx-mpv-libs.git KurobaEx-mpv-libs
 
-WORKDIR /build/buildscripts
-
-RUN for patch in ../KurobaEx-mpv-libs/patches/*.patch; do \
+RUN for patch in KurobaEx-mpv-libs/patches/*.patch; do \
     echo "==> Applying $patch" && \
     git apply "$patch"; \
 done
+
+WORKDIR /build/buildscripts
 
 RUN IN_CI=1 WGET="wget --progress=bar:force" ./include/download-sdk.sh
 RUN IN_CI=1 WGET="wget --progress=bar:force" ./include/download-deps.sh
