@@ -1,13 +1,14 @@
-From 7fc5a52a49ffd8066cf789bf91dc5ea9459564a5 Mon Sep 17 00:00:00 2001
+From f7137361993b2e5acacbd1b9623d0f928f5288a8 Mon Sep 17 00:00:00 2001
 From: k1rakishou <kez1911@protonmail.com>
 Date: Tue, 14 Apr 2026 18:16:03 +0700
 Subject: [PATCH] Add some other changes + bump player version
 
+Add forgotten function declaration
 ---
  app/src/main/jni/jni_utils.cpp |  2 +-
  app/src/main/jni/jni_utils.h   |  2 +-
- app/src/main/jni/main.cpp      | 10 +++++++++-
- 3 files changed, 11 insertions(+), 3 deletions(-)
+ app/src/main/jni/main.cpp      | 11 ++++++++++-
+ 3 files changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/app/src/main/jni/jni_utils.cpp b/app/src/main/jni/jni_utils.cpp
 index 8f28143..40339b5 100644
@@ -36,10 +37,18 @@ index 970eed9..e4bd638 100644
  
  bool acquire_jni_env(JavaVM *vm, JNIEnv **env);
 diff --git a/app/src/main/jni/main.cpp b/app/src/main/jni/main.cpp
-index 5f3faed..42d0a74 100644
+index 5f3faed..0f1f4cd 100644
 --- a/app/src/main/jni/main.cpp
 +++ b/app/src/main/jni/main.cpp
-@@ -30,7 +30,9 @@ extern "C" {
+@@ -23,6 +23,7 @@ extern "C" {
+     jni_func(void, create, jobject appctx);
+     jni_func(void, init);
+     jni_func(void, destroy);
++    jni_func(jobject, playerVersion);
+ 
+     jni_func(void, command, jobjectArray jarray);
+ };
+@@ -30,7 +31,9 @@ extern "C" {
  JavaVM *g_vm;
  mpv_handle *g_mpv;
  std::atomic<bool> g_event_thread_request_exit(false);
@@ -50,7 +59,7 @@ index 5f3faed..42d0a74 100644
  static pthread_t event_thread_id;
  
  static void prepare_environment(JNIEnv *env, jobject appctx) {
-@@ -90,6 +92,12 @@ jni_func(void, destroy) {
+@@ -90,6 +93,12 @@ jni_func(void, destroy) {
      g_mpv = NULL;
  }
  
