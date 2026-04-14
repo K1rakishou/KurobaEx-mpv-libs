@@ -20,8 +20,14 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /build
 
 RUN git clone https://github.com/mpv-android/mpv-android.git .
+RUN git clone https://github.com/K1rakishou/KurobaEx-mpv-libs.git mpv-libs
 
 WORKDIR /build/buildscripts
+
+RUN for patch in ../mpv-libs/patches/*.patch; do \
+    echo "==> Applying $patch" && \
+    git apply "$patch"; \
+done
 
 RUN IN_CI=1 WGET="wget --progress=bar:force" ./include/download-sdk.sh
 RUN IN_CI=1 WGET="wget --progress=bar:force" ./include/download-deps.sh
@@ -32,15 +38,15 @@ RUN mkdir -p deps/mpv && \
     rm master.tgz
 
 RUN for arch in armv7l arm64 x86 x86_64; do \
-        echo "==> Building deps for $arch" && \
-        ./buildall.sh --arch $arch --only-deps mpv && \
-        echo "==> Building mpv for $arch" && \
-        ./buildall.sh --arch $arch -n mpv || { \
-            logfile="deps/mpv/_build-${arch}/meson-logs/meson-log.txt"; \
-            [ -f "$logfile" ] && cat "$logfile"; \
-            exit 1; \
-        }; \
-    done
+    echo "==> Building deps for $arch" && \
+    ./buildall.sh --arch $arch --only-deps mpv && \
+    echo "==> Building mpv for $arch" && \
+    ./buildall.sh --arch $arch -n mpv || { \
+        logfile="deps/mpv/_build-${arch}/meson-logs/meson-log.txt"; \
+        [ -f "$logfile" ] && cat "$logfile"; \
+        exit 1; \
+    }; \
+done
 
 RUN . ./include/path.sh && \
     PREFIX32=$([ -f prefix/armv7l/lib/libmpv.so ] && echo $PWD/prefix/armv7l) && \
