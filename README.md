@@ -16,3 +16,4 @@ docker cp mpv-tmp:/build/app/src/main/libs ./libs
 docker rm mpv-tmp
 ```
 If you did any breaking changes (like adding/removing a new JNI function to be used in Android code) you need to bump the `player_version` in `app/src/main/jni/main.cpp` and then also make sure it's the same as in `MPVLib.SUPPORTED_MPV_PLAYER_VERSION`.
+Then you can use `Install mpv libraries from local directory` option in Plugins settings. You will need to point it to a directory with the libraries. You may also want to put `cacert.pem` into the same directory so that TLS works.
