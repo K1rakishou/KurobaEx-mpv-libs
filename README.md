@@ -12,6 +12,8 @@ The source code can be found in the main repository.
 docker create --name mpv-tmp mpv-android-build
 # Copy the libs out of it
 docker cp mpv-tmp:/build/app/src/main/libs ./libs
+# Copy the per-ABI zip archives (each contains only that ABI's .so files, no directories)
+docker cp mpv-tmp:/build/app/src/main/zips ./zips
 # Remove the temp container
 docker rm mpv-tmp
 ```
